@@ -4,7 +4,7 @@ Ask a business question in plain language. A Claude agent writes the SQL, a
 guard validates it, and it runs with a read-only Postgres role. You get the
 SQL, the table, an optional chart and a short answer.
 
-**Live demo:** _coming soon_ · **Stack:** Next.js 16 · TypeScript · Claude
+**Live demo:** [ask-your-db-tau.vercel.app](https://ask-your-db-tau.vercel.app) · **Stack:** Next.js 16 · TypeScript · Claude
 (tool calling) · Postgres on Neon · Tailwind v4 + shadcn/ui · Recharts · Vitest
 
 ![Answer with chart and table](docs/screenshots/answer-chart.png)

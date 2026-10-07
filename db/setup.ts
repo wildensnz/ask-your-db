@@ -4,7 +4,8 @@
  * Uses DATABASE_URL_ADMIN (never shipped to Vercel) to:
  *   1. apply db/schema.sql (drops and recreates the demo tables),
  *   2. insert the deterministic seed data,
- *   3. create or rotate the read-only role `askdb_reader`,
+ *   3. create the read-only role `askdb_reader` (its password is kept from
+ *      DATABASE_URL in .env.local; pass --rotate to generate a new one),
  *   4. verify the reader role cannot write,
  *   5. write DATABASE_URL (reader role) into .env.local.
  *
@@ -153,7 +154,7 @@ async function insertSeed(client: Client, data: SeedData) {
   );
 }
 
-/** Creates (or rotates the password of) the SELECT-only role. */
+/** Creates the SELECT-only role, or resets its password to the one given. */
 async function setupReaderRole(client: Client, password: string) {
   if (!/^[A-Za-z0-9_-]+$/.test(password)) {
     throw new Error('generated password has unexpected characters');
@@ -194,6 +195,22 @@ async function setupReaderRole(client: Client, password: string) {
     log(`  warning: could not set role defaults (${String(error)})`);
   }
   log(`  role ${READER_ROLE} ready`);
+}
+
+/**
+ * Password of the reader role already in use, taken from DATABASE_URL in
+ * .env.local, so re-running setup keeps the deployed connection string valid.
+ */
+function readerPassword(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  try {
+    const parsed = new URL(url);
+    if (parsed.username !== READER_ROLE) return undefined;
+    const password = decodeURIComponent(parsed.password);
+    return /^[A-Za-z0-9_-]+$/.test(password) ? password : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function readerUrl(adminUrl: string, password: string) {
@@ -258,8 +275,15 @@ async function main() {
     await client.query('COMMIT');
 
     log('Configuring reader role...');
-    const password = randomBytes(24).toString('base64url');
+    const existing = readerPassword(process.env.DATABASE_URL);
+    const rotate = process.argv.includes('--rotate') || !existing;
+    const password = rotate ? randomBytes(24).toString('base64url') : existing;
     await setupReaderRole(client, password);
+    log(
+      rotate
+        ? '  new password generated (update DATABASE_URL wherever it is used)'
+        : '  password kept from DATABASE_URL (pass --rotate to change it)',
+    );
 
     const url = readerUrl(adminUrl, password);
     log('Verifying reader role...');

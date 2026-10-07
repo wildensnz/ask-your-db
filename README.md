@@ -96,8 +96,10 @@ npm run db:setup             # schema + seed + read-only role; writes DATABASE_U
 npm run dev
 ```
 
-`npm run db:setup` is idempotent: it drops and recreates the demo tables,
-reseeds them and rotates the reader role's password.
+`npm run db:setup` is idempotent: it drops and recreates the demo tables and
+reseeds them. The reader role keeps the password already in `DATABASE_URL`, so
+the deployed connection string stays valid; run `npm run db:setup -- --rotate`
+to generate a new one.
 
 Environment variables:
 

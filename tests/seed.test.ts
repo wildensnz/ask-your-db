@@ -77,6 +77,17 @@ describe('generateSeed', () => {
     }
   });
 
+  it('gives every product a non-negative stock, with some nearly out', () => {
+    const data = seed();
+    for (const p of data.products) {
+      expect(p.stock).toBeGreaterThanOrEqual(0);
+      if (!p.active) expect(p.stock).toBe(0);
+    }
+    const low = data.products.filter((p) => p.active && p.stock < 10);
+    expect(low.length).toBeGreaterThanOrEqual(5);
+    expect(low.length).toBeLessThan(20);
+  });
+
   it('has unique names and ids', () => {
     const data = seed();
     const unique = (xs: unknown[]) => new Set(xs).size === xs.length;

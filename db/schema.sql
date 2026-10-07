@@ -21,6 +21,7 @@ CREATE TABLE products (
   brand        TEXT NOT NULL,
   unit_price   NUMERIC(12, 2) NOT NULL CHECK (unit_price > 0),
   unit         TEXT NOT NULL,
+  stock        INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
   active       BOOLEAN NOT NULL DEFAULT TRUE
 );
 

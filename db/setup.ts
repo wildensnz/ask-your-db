@@ -76,7 +76,16 @@ async function insertSeed(client: Client, data: SeedData) {
   await bulkInsert(
     client,
     'products',
-    ['id', 'category_id', 'name', 'brand', 'unit_price', 'unit', 'active'],
+    [
+      'id',
+      'category_id',
+      'name',
+      'brand',
+      'unit_price',
+      'unit',
+      'stock',
+      'active',
+    ],
     data.products.map((p) => [
       p.id,
       p.categoryId,
@@ -84,6 +93,7 @@ async function insertSeed(client: Client, data: SeedData) {
       p.brand,
       cents(p.unitPriceCents),
       p.unit,
+      p.stock,
       p.active,
     ]),
   );

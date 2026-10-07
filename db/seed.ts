@@ -19,6 +19,8 @@ export interface Product {
   brand: string;
   unitPriceCents: number;
   unit: string;
+  /** Units on hand. 0 for discontinued products; a few are nearly out. */
+  stock: number;
   active: boolean;
 }
 export interface SalesRep {
@@ -388,17 +390,29 @@ export function generateSeed(options: SeedOptions = {}): SeedData {
   }));
   const categoryId = new Map(categories.map((c) => [c.name, c.id]));
 
+  // Stock uses a separate stream so adding it did not reshuffle the rest of
+  // the data. About 1 in 8 active products is nearly out (0-9 units).
+  const stockRng = createRng(seed + 1);
   const products: Product[] = PRODUCTS.map(
-    ([category, name, brand, price, unit], i) => ({
-      id: i + 1,
-      categoryId: categoryId.get(category)!,
-      name,
-      brand,
-      unitPriceCents: Math.round(price * 100),
-      unit,
+    ([category, name, brand, price, unit], i) => {
       // A few discontinued products so "active" means something.
-      active: i % 23 !== 7,
-    }),
+      const active = i % 23 !== 7;
+      const stock = !active
+        ? 0
+        : i % 8 === 3
+          ? stockRng.int(0, 9)
+          : stockRng.int(25, 400);
+      return {
+        id: i + 1,
+        categoryId: categoryId.get(category)!,
+        name,
+        brand,
+        unitPriceCents: Math.round(price * 100),
+        unit,
+        stock,
+        active,
+      };
+    },
   );
 
   const salesReps: SalesRep[] = SALES_REPS.map(

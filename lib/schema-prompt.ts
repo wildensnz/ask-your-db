@@ -15,9 +15,9 @@ Tables:
 categories(id, name)
   8 categories, e.g. 'Bebidas', 'Snacks', 'Lácteos', 'Limpieza'.
 
-products(id, category_id -> categories.id, name, brand, unit_price, unit, active)
-  ~80 products. unit_price is the list price in RD$. active=false means
-  discontinued.
+products(id, category_id -> categories.id, name, brand, unit_price, unit, stock, active)
+  ~80 products. unit_price is the list price in RD$. stock is units on hand
+  (a snapshot, not derived from orders). active=false means discontinued.
 
 sales_reps(id, name, region, hired_at)
   8 reps. region is a sales territory, e.g. 'Gran Santo Domingo', 'Cibao Norte'.

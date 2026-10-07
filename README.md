@@ -9,6 +9,21 @@ SQL, the table, an optional chart and a short answer.
 
 ![Answer with chart and table](docs/screenshots/answer-chart.png)
 
+<details>
+<summary>More screenshots: bar chart with a corrected attempt, guard rejection, honest "no"</summary>
+
+![Top products with a corrected first attempt](docs/screenshots/answer-bar.png)
+
+![The SQL guard rejecting a DROP TABLE](docs/screenshots/guard-rejected.png)
+
+![An impossible question answered honestly](docs/screenshots/honest-no.png)
+
+</details>
+
+_Screenshots show the real UI with the model responses mocked; the rows and
+SQL come from real queries against the demo database. See
+[docs/screenshots](docs/screenshots/README.md)._
+
 ## What it does
 
 1. You type a question such as _"Which 5 products sold the most units in the
